@@ -7,7 +7,7 @@ class ClientPurse(models.Model):
     name = models.CharField(max_length=128, verbose_name='Имя пользователя', blank=True, null=True)
     client = models.OneToOneField(to=get_user_model(), on_delete=models.CASCADE,
                                   related_name='client', verbose_name='Клиент', null=True, blank=True)
-    purse_number = models.CharField(verbose_name='Номер кошелька', max_length=255, blank=True, null=True)
+    purse_number = models.CharField(verbose_name='Номер кошелька', max_length=255, unique=True)
     balance = models.DecimalField(verbose_name='Баланс', max_digits=19, decimal_places=10)
     queue = models.ManyToManyField('QueueClientTransactions', blank=True, verbose_name='Очередь')
 
@@ -23,6 +23,13 @@ class QueueClientTransactions(models.Model):
     transaction = models.ManyToManyField('Transactions', blank=True, verbose_name='Транзакция')
     client = models.ForeignKey(ClientPurse, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Клиент')
     active = models.BooleanField(verbose_name='Статус очереди', default=True)
+
+    def save(self, *args, **kwargs):
+        target_client = ClientPurse.objects.filter(id=self.client.id).first()
+        print(target_client)
+        super().save(*args, **kwargs)
+        target_client.queue.add(self)
+        target_client.save()
 
     def __str__(self):
         return f'Queue {self.client}'
