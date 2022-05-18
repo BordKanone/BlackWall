@@ -229,3 +229,12 @@ GET ```127.0.0.1:8000/api/v1/client/4/```
 - Docker compose
 
 ## клонирование проекта:
+
+ - Склонируйте проект с github
+
+ - ```git clone git@github.com:BordKanone/blackwall-test.git .```
+
+ - [Установите докер](https://www.docker.com/get-started/)
+ - Выполните команду: ```docker-compose up -d --build --remove-orphans```
+ - Дождитесь деплоя проекта
+ - Выполните запрос на ```127.0.0.1:8000/api/v1/queue/```
