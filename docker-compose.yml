@@ -1,0 +1,42 @@
+version: "3.7"
+
+services:
+  black_wall:
+    restart: always
+    container_name: blackwall_back
+    command: >
+      sh -c "python manage.py migrate --noinput && 
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./:/blackwall/back/
+    build:
+      context: ./
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    depends_on:
+      - postgresql
+    networks:
+      - blackwall_network
+
+  postgresql:
+    restart: always
+    container_name: postgresql
+    image: postgres:12.0-alpine
+    ports:
+      - "0.0.0.0:5432:5432"
+    env_file:
+      - ./.env
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+    command: -p 5432
+    networks:
+      - blackwall_network
+
+volumes:
+  postgresql:
+
+networks:
+  blackwall_network:
